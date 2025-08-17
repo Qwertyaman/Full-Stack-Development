@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG Drawing Tool</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff;
+      padding: 20px;
+    }
+
+    .container {
+      border: 1px solid #000;
+      padding: 15px;
+      max-width: 650px;
+      margin: auto;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    #drawingArea {
+      border: 2px solid #000;
+      width: 600px;
+      height: 400px;
+      cursor: crosshair;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>SVG Drawing Tool</h2>
+    <svg id="drawingArea"></svg>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const svg = document.getElementById("drawingArea");
+      let isDrawing = false;
+      let currentPath = null;
+
+      svg.addEventListener("mousedown", (e) => {
+        isDrawing = true;
+        const { x, y } = getMousePosition(e);
+        currentPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        currentPath.setAttribute("stroke", "blue");
+        currentPath.setAttribute("stroke-width", "2");
+        currentPath.setAttribute("fill", "none");
+        currentPath.setAttribute("d", `M ${x} ${y}`);
+        svg.appendChild(currentPath);
+      });
+
+      svg.addEventListener("mousemove", (e) => {
+        if (!isDrawing) return;
+        const { x, y } = getMousePosition(e);
+        let d = currentPath.getAttribute("d");
+        currentPath.setAttribute("d", `${d} L ${x} ${y}`);
+      });
+
+      svg.addEventListener("mouseup", () => {
+        isDrawing = false;
+        currentPath = null;
+      });
+
+      svg.addEventListener("mouseleave", () => {
+        isDrawing = false;
+        currentPath = null;
+      });
+
+      function getMousePosition(e) {
+        const rect = svg.getBoundingClientRect();
+        return {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top
+        };
+      }
+    });
+  </script>
+</body>
+</html>
